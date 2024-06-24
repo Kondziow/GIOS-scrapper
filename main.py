@@ -4,19 +4,21 @@ base_url = "https://api.gios.gov.pl/pjp-api/rest/station"
 
 def get_all_station():
     url = base_url + "/findAll"
-    response = requests.get(url)
-    if response.status_code == 200:
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
         return response.json()
-    else:
-        raise Exception(f"ERROR FETCHING STATIONS: {response.status_code}")
+    except requests.RequestException as e:
+        raise Exception(f"ERROR FETCHING STATIONS: {e}")
 
 def get_installation_by_station_id(station_id):
     url = base_url + "/sensors/" + station_id
-    response = requests.get(url)
-    if response.status_code == 200:
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
         return response.json()
-    else:
-        raise Exception(f"ERROR FETCHING INSTALLATIONS FOR STATION {station_id}: {response.status_code}")
+    except requests.RequestException as e:
+        raise Exception(f"ERROR FETCHING INSTALLATIONS FOR STATION {station_id}: {e}")
 
 
 def main():
@@ -27,20 +29,25 @@ def main():
             station_id = str(station['id'])
             station_name = station['stationName']
 
-            print("Station #" + station_id + " (" + station_name + "):")
+            print(f"Station #{station_id} ({station_name}):")
 
             try:
                 installations = get_installation_by_station_id(station_id)
+
+                if not installations:
+                    print(f"\tNo installations found for station #{station_id}")
+                    continue
+
                 for installation in installations:
                     installation_id = str(installation['id'])
-                    params = installation['param']
-                    param_formula = params['paramFormula']
+                    param_formula = installation['param']['paramFormula']
 
-                    print("\tinstallation #" + installation_id + ": ‘" + param_formula + "’")
+                    print(f"\tinstallation #{installation_id}: ‘{param_formula}’")
             except Exception as e:
                 print(e)
     except Exception as e:
         print(e)
+
 
 if __name__ == '__main__':
     main()
