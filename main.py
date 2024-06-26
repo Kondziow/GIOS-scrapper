@@ -1,6 +1,6 @@
 import requests
 
-base_url = "https://api.gios.gov.pl/pjp-api/rest/station"
+BASE_URL = "https://api.gios.gov.pl/pjp-api/rest/station"
 
 
 def send_get_request(url):
@@ -13,12 +13,12 @@ def send_get_request(url):
 
 
 def get_all_stations():
-    url = base_url + "/findAll"
+    url = BASE_URL + "/findAll"
     return send_get_request(url)
 
 
 def get_installation_by_station_id(station_id):
-    url = base_url + "/sensors/" + station_id
+    url = BASE_URL + "/sensors/" + station_id
     return send_get_request(url)
 
 
